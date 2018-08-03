@@ -1,6 +1,7 @@
 ﻿using System;
 using GalaxyOfLanguages.Console.Configuration;
 using GalaxyOfLanguages.Console.Services;
+using GalaxyOfLanguages.Logic.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +44,8 @@ namespace GalaxyOfLanguages.Console
                 services.AddTransient(sp => sp.GetService<IOptions<AppConfig>>().Value);
 
                 services.AddScoped<IHostedService, DiscordNetHostedService>();
+                services.AddTransient<LogMessageFactory>();
+                services.AddTransient<DiscordNetLogger>();
             });
         }
 

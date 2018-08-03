@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Discord;
-using Discord.WebSocket;
+﻿using Discord;
 
-namespace GalaxyOfLanguages.Logic.EventResponders
+namespace GalaxyOfLanguages.Logic.DiscordEvents.EventObservers
 {
     public abstract class DiscordResponder
     {

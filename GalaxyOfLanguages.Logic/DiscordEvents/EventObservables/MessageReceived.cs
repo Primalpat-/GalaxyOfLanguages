@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Discord.WebSocket;
 using GalaxyOfLanguages.Logic.Observable;
 
-namespace GalaxyOfLanguages.Logic
+namespace GalaxyOfLanguages.Logic.DiscordEvents.EventObservables
 {
     public class MessageReceived : IObservable<SocketMessage>
     {

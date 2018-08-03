@@ -10,7 +10,7 @@ using GalaxyOfLanguages.Logic.Extensions;
 using GalaxyOfLanguages.Logic.TranslationApi.Microsoft;
 using Z.Core.Extensions;
 
-namespace GalaxyOfLanguages.Logic.EventResponders
+namespace GalaxyOfLanguages.Logic.DiscordEvents.EventObservers
 {
     public class TranslationResponder : IDiscordResponder, IObserver<SocketMessage>
     {
