@@ -4,21 +4,26 @@ using GalaxyOfLanguages.Logic.TranslationApi.Models;
 
 namespace GalaxyOfLanguages.Logic.TranslationApi.Strategy
 {
-    public abstract class Translator
+    public class Translator
     {
-        public ITranslationApi TranslationApi;
+        private ITranslationApi _translationApi;
+
+        public void SetTranslationApi(ITranslationApi translationApi)
+        {
+            _translationApi = translationApi;
+        }
 
         public Task<List<Language>> GetSupportedLanguages()
         {
-            return TranslationApi.SupportedLanguages();
+            return _translationApi.SupportedLanguages();
         }
 
-        public Task<List<Models.Translation>> GetTranslations(string translationApiKey,
-                                                              string textToTranslate,
-                                                              Language languageFrom,
-                                                              List<Language> languagesTo)
+        public Task<List<Translation>> GetTranslations(string translationApiKey,
+                                                       string textToTranslate,
+                                                       Language languageFrom,
+                                                       List<Language> languagesTo)
         {
-            return TranslationApi.Translate(translationApiKey, textToTranslate, languageFrom, languagesTo);
+            return _translationApi.Translate(translationApiKey, textToTranslate, languageFrom, languagesTo);
         }
     }
 }

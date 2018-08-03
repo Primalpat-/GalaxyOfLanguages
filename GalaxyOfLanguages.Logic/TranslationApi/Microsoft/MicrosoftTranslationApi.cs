@@ -17,11 +17,6 @@ namespace GalaxyOfLanguages.Logic.TranslationApi.Microsoft
         private const string GetSupportedLanguagesUri = "https://api.cognitive.microsofttranslator.com/languages?api-version=3.0&scope=translation";
         private const string GetTranslationBaseUri = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0";
 
-        public string SupportedLanguagesUrl()
-        {
-            return "https://docs.microsoft.com/en-us/azure/cognitive-services/translator/languages";
-        }
-
         public async Task<List<Language>> SupportedLanguages()
         {
             var result = new List<Language>();

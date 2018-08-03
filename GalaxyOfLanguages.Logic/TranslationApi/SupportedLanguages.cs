@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using GalaxyOfLanguages.Logic.TranslationApi.Microsoft;
 using GalaxyOfLanguages.Logic.TranslationApi.Models;
+using GalaxyOfLanguages.Logic.TranslationApi.Strategy;
 using Z.Core.Extensions;
 
 namespace GalaxyOfLanguages.Logic.TranslationApi
@@ -12,7 +13,8 @@ namespace GalaxyOfLanguages.Logic.TranslationApi
 
         private SupportedLanguages()
         {
-            var translator = new MicrosoftTranslator();
+            var translator = new Translator();
+            translator.SetTranslationApi(new MicrosoftTranslationApi());
             _supportedLanguages = translator.GetSupportedLanguages().Result;
         }
 

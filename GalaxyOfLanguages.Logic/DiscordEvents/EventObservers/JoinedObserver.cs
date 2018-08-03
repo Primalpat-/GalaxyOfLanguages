@@ -6,23 +6,20 @@ using Z.Core.Extensions;
 
 namespace GalaxyOfLanguages.Logic.DiscordEvents.EventObservers
 {
-    public class TranslationObserver : IObserver<SocketMessage>
+    public class JoinedObserver : IObserver<SocketGuild>
     {
         private readonly IDisposable _unsubscriber;
-        private readonly string _translationApiKey;
 
-        public TranslationObserver(IObservable<SocketMessage> provider, string translationApiKey)
+        public JoinedObserver(IObservable<SocketGuild> provider)
         {
             if (provider.IsNotNull())
                 _unsubscriber = provider.Subscribe(this);
-
-            _translationApiKey = translationApiKey;
         }
 
         public void OnCompleted()
         {
             //TODO
-            Console.WriteLine("Additional messages will not be processed.");
+            Console.WriteLine("Additional joins will not be processed.");
         }
 
         public void OnError(Exception error)
@@ -31,10 +28,10 @@ namespace GalaxyOfLanguages.Logic.DiscordEvents.EventObservers
             throw error;
         }
 
-        public void OnNext(SocketMessage message)
+        public void OnNext(SocketGuild guild)
         {
             var responder = new DiscordResponder();
-            responder.SetResponseBehavior(new TranslationBehavior(message, _translationApiKey));
+            responder.SetResponseBehavior(new JoinedBehavior(guild));
             responder.Respond();
         }
 

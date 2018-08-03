@@ -6,17 +6,14 @@ using Z.Core.Extensions;
 
 namespace GalaxyOfLanguages.Logic.DiscordEvents.EventObservers
 {
-    public class TranslationObserver : IObserver<SocketMessage>
+    public class HelpObserver : IObserver<SocketMessage>
     {
         private readonly IDisposable _unsubscriber;
-        private readonly string _translationApiKey;
 
-        public TranslationObserver(IObservable<SocketMessage> provider, string translationApiKey)
+        public HelpObserver(IObservable<SocketMessage> provider)
         {
             if (provider.IsNotNull())
                 _unsubscriber = provider.Subscribe(this);
-
-            _translationApiKey = translationApiKey;
         }
 
         public void OnCompleted()
@@ -34,7 +31,7 @@ namespace GalaxyOfLanguages.Logic.DiscordEvents.EventObservers
         public void OnNext(SocketMessage message)
         {
             var responder = new DiscordResponder();
-            responder.SetResponseBehavior(new TranslationBehavior(message, _translationApiKey));
+            responder.SetResponseBehavior(new HelpBehavior(message));
             responder.Respond();
         }
 

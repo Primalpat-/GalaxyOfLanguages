@@ -1,6 +1,8 @@
 ﻿using System;
+using Discord.WebSocket;
 using GalaxyOfLanguages.Console.Configuration;
 using GalaxyOfLanguages.Console.Services;
+using GalaxyOfLanguages.Logic.DiscordEvents.EventObservables;
 using GalaxyOfLanguages.Logic.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,11 +43,14 @@ namespace GalaxyOfLanguages.Console
 
                 services.AddOptions();
                 services.Configure<AppConfig>(hostContext.Configuration.GetSection("App"));
-                services.AddTransient(sp => sp.GetService<IOptions<AppConfig>>().Value);
+                services.AddScoped(sp => sp.GetService<IOptions<AppConfig>>().Value);
 
                 services.AddScoped<IHostedService, DiscordNetHostedService>();
                 services.AddTransient<LogMessageFactory>();
+                services.AddTransient<DiscordSocketClient>();
                 services.AddTransient<DiscordNetLogger>();
+                services.AddTransient<JoinedGuild>();
+                services.AddTransient<MessageReceived>();
             });
         }
 

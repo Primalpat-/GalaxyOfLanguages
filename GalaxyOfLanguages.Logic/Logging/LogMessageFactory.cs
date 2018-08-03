@@ -1,4 +1,5 @@
 ﻿using GalaxyOfLanguages.Logic.Logging.Messages;
+using System;
 
 namespace GalaxyOfLanguages.Logic.Logging
 {
@@ -15,6 +16,14 @@ namespace GalaxyOfLanguages.Logic.Logging
         {
             var message = (ILogMessage) new LogMessage(discordLogMessage.Message);
             message = new Source(message, discordLogMessage.Source);
+            message = new Timestamp(message);
+            return message;
+        }
+
+        public ILogMessage CreateLogMessage(Exception ex)
+        {
+            var message = (ILogMessage)new LogMessage(ex.Message);
+            message = new Source(message, ex.Source);
             message = new Timestamp(message);
             return message;
         }

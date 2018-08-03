@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -16,17 +17,21 @@ namespace GalaxyOfLanguages.Console.Services
         private readonly AppConfig _config;
         private readonly ILogger _logger;
         private readonly LogMessageFactory _messageFactory;
-        private readonly DiscordNetLogger _discordLogger;
         private readonly DiscordSocketClient _client;
+        private readonly DiscordNetLogger _discordLogger;
+        private readonly JoinedGuild _joinedGuild;
+        private readonly MessageReceived _messageReceived;
 
         public DiscordNetHostedService(AppConfig config, ILogger<DiscordNetHostedService> logger, LogMessageFactory messageFactory,
-            DiscordNetLogger discordLogger)
+            DiscordSocketClient client, DiscordNetLogger discordLogger, JoinedGuild joinedGuild, MessageReceived messageReceived)
         {
             _config = config;
             _logger = logger;
             _messageFactory = messageFactory;
+            _client = client;
             _discordLogger = discordLogger;
-            _client = new DiscordSocketClient();
+            _joinedGuild = joinedGuild;
+            _messageReceived = messageReceived;
 
             SetClientEvents();
         }
@@ -36,9 +41,17 @@ namespace GalaxyOfLanguages.Console.Services
             var message = _messageFactory.CreateLogMessage("Starting...");
             _logger.LogInformation(message.Display());
 
-            //TODO Handle connection errors, and log them
-            await _client.LoginAsync(TokenType.Bot, _config.Discord.BotToken);
-            await _client.StartAsync();
+            try
+            {
+                await _client.LoginAsync(TokenType.Bot, _config.Discord.BotToken);
+                await _client.StartAsync();
+                await _client.SetGameAsync("with code | *help");
+            }
+            catch (Exception ex)
+            {
+                var critical = _messageFactory.CreateLogMessage(ex);
+                _logger.LogCritical(critical.Display());
+            }
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -46,16 +59,31 @@ namespace GalaxyOfLanguages.Console.Services
             var message = _messageFactory.CreateLogMessage("Stopping...");
             _logger.LogInformation(message.Display());
 
-            await _client.StopAsync();
+            try
+            {
+                await _client.StopAsync();
+            }
+            catch (Exception ex)
+            {
+                var critical = _messageFactory.CreateLogMessage(ex);
+                _logger.LogCritical(critical.Display());
+            }
         }
 
         private void SetClientEvents()
         {
             _client.Log += _discordLogger.Log;
+            _client.JoinedGuild += (guild) => Task.Run(() => _joinedGuild.Join(guild));
+            _client.MessageReceived += (message) => Task.Run(() => _messageReceived.ReceiveMessage(message));
 
-            var messageReceived = new MessageReceived();
-            var translationResponder = new TranslationResponder(messageReceived, _config.Translator.ApiKey);
-            _client.MessageReceived += (message) => Task.Run(() => messageReceived.ReceiveMessage(message));
+            RegisterObservers();
+        }
+
+        private void RegisterObservers()
+        {
+            var joinedObserver = new JoinedObserver(_joinedGuild);
+            var helpObserver = new HelpObserver(_messageReceived);
+            var translationObserver = new TranslationObserver(_messageReceived, _config.Translator.ApiKey);
         }
     }
 }
